@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#00e5a0">
+<title>Provvigioni Dealer — Tasso Base 7,49%</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0c10;--surf:#111418;--surf2:#181c22;--brd:#252a33;
+  --acc:#00e5a0;--acc2:#0099ff;--warn:#ff6b35;--gold:#f59e0b;
+  --txt:#e8ecf0;--mut:#5a6270;--red:#ef4444;--purple:#a855f7;
+}
+body{background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace;min-height:100vh;padding:1.5rem 1rem;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-30%;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(ellipse,rgba(0,229,160,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+.wrap{max-width:900px;margin:0 auto;position:relative;z-index:1}
+
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--brd);flex-wrap:wrap;gap:.75rem}
+.htitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.03em}
+.hsub{font-size:.6rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:.15rem}
+.badge{background:var(--surf2);border:1px solid var(--brd);border-radius:6px;padding:.3rem .9rem;text-align:center}
+.badge span{display:block;font-size:.5rem;color:var(--mut);text-transform:uppercase;letter-spacing:.12em}
+.badge strong{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--acc);line-height:1.1}
+
+.fp{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+.fp-title{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.12em;margin-bottom:1rem}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;align-items:end}
+@media(max-width:680px){.fg{grid-template-columns:1fr 1fr}}
+@media(max-width:400px){.fg{grid-template-columns:1fr}}
+.flabel{display:block;font-size:.58rem;color:var(--mut);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.35rem}
+input[type=number],select{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.6rem .8rem;color:var(--txt);font-family:'DM Mono',monospace;font-size:.95rem;outline:none;transition:border-color .2s;appearance:none}
+input[type=number]:focus,select:focus{border-color:var(--acc)}
+select{cursor:pointer}
+select option{background:var(--surf)}
+
+/* tasso base fisso chip */
+.base-chip{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);border-radius:6px;padding:.6rem .85rem;width:100%}
+.base-chip-label{font-size:.58rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em}
+.base-chip-value{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--acc)}
+
+.soglia-panel{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:1.1rem;margin-bottom:1.25rem}
+.soglia-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.soglia-hdr-title{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.1em}
+.soglia-btn{font-size:.6rem;color:var(--acc);background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);border-radius:4px;padding:.18rem .5rem;cursor:pointer}
+.soglia-body{display:none;margin-top:.9rem}
+.soglia-body.open{display:block}
+.soglia-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem}
+.si{background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:.55rem .75rem}
+.si label{font-size:.55rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem;display:block}
+.si input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--brd);padding:.15rem 0;color:var(--acc2);font-family:'DM Mono',monospace;font-size:.88rem;outline:none}
+.si input:focus{border-bottom-color:var(--acc2)}
+.snote{font-size:.56rem;color:var(--mut);margin-top:.75rem;line-height:1.7}
+
+.results{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:600px){.results{grid-template-columns:1fr}}
+
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:1.25rem;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.card-cliente::before{background:var(--acc2)}
+.card-dealer::before{background:var(--purple)}
+.card.usura{border-color:var(--red)!important}
+.card.usura::before{background:var(--red)!important}
+.usura-banner{display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:.45rem .7rem;margin-bottom:.75rem;font-size:.62rem;color:var(--red);line-height:1.5}
+.usura-banner.on{display:block}
+
+.card-title{font-family:'Syne',sans-serif;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:1rem}
+.card-cliente .card-title{color:var(--acc2)}
+.card-dealer .card-title{color:var(--purple)}
+.card.usura .card-title{color:var(--red)}
+
+.big-label{font-size:.52rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.1rem}
+.big-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1;margin-bottom:.35rem}
+.card-cliente .big-val{color:var(--acc2)}
+.card-dealer .big-val{color:var(--purple)}
+.card.usura .big-val{color:var(--red)}
+
+.rate-row{display:flex;gap:.4rem;margin-bottom:.75rem;flex-wrap:wrap}
+.rpill{font-size:.58rem;padding:.15rem .45rem;border-radius:5px;font-weight:500}
+.rpill-tan{background:rgba(90,98,112,.2);color:var(--mut);border:1px solid var(--brd)}
+.rpill-taeg{background:rgba(0,153,255,.1);color:var(--acc2);border:1px solid rgba(0,153,255,.25)}
+.card.usura .rpill-taeg{background:rgba(239,68,68,.12);color:var(--red);border-color:rgba(239,68,68,.3)}
+
+.reff-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--brd);border-radius:6px;padding:.35rem .65rem;margin-bottom:.6rem}
+.reff-lbl{font-size:.55rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.reff-val{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--txt)}
+
+.pbox{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.22);border-radius:6px;padding:.45rem .75rem;margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center}
+.pbox-lbl{font-size:.52rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold)}
+.pbox-val{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;color:var(--gold)}
+
+.div{height:1px;background:var(--brd);margin:.65rem 0}
+.row{display:flex;justify-content:space-between;align-items:baseline;font-size:.67rem;margin-bottom:.38rem;gap:.35rem}
+.row-l{color:var(--mut);flex-shrink:0;font-size:.62rem}
+.row-v{font-weight:500;text-align:right}
+.neg{color:var(--warn)}.neu{color:var(--txt)}.dim{color:var(--mut)}.gld{color:var(--gold)}.pur{color:var(--purple)}
+
+.tbox{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:.55rem .75rem;margin-top:.55rem}
+.tbox-title{font-size:.52rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:.4rem;font-family:'Syne',sans-serif}
+.tr{display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.25rem}
+.tr-l{color:var(--mut)}.tr-v{color:var(--txt);font-weight:500}
+.tsep{height:1px;background:rgba(245,158,11,.15);margin:.35rem 0}
+.tf{display:flex;justify-content:space-between;font-size:.8rem}
+.tf-l{color:var(--gold);font-family:'Syne',sans-serif;font-weight:700}
+.tf-v{color:var(--gold);font-family:'Syne',sans-serif;font-weight:800}
+
+.prov-box{background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.25);border-radius:6px;padding:.55rem .75rem;margin-top:.55rem}
+.prov-box-title{font-size:.52rem;text-transform:uppercase;letter-spacing:.1em;color:var(--purple);margin-bottom:.4rem;font-family:'Syne',sans-serif}
+.prov-tr{display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.25rem}
+.prov-tr-l{color:var(--mut)}.prov-tr-v{color:var(--txt);font-weight:500}
+.prov-sep{height:1px;background:rgba(168,85,247,.2);margin:.35rem 0}
+.prov-tf{display:flex;justify-content:space-between;font-size:.9rem;margin-top:.1rem}
+.prov-tf-l{color:var(--purple);font-family:'Syne',sans-serif;font-weight:700}
+.prov-tf-v{color:var(--purple);font-family:'Syne',sans-serif;font-weight:800}
+
+footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-align:center;font-size:.56rem;color:var(--mut);line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="htitle">Provvigioni Dealer</div>
+    <div class="hsub">Tasso base 7,49% &middot; Max 25.000&euro; &middot; Max 120 mesi</div>
+  </div>
+  <div class="badge">
+    <span>Tasso base</span>
+    <strong>7,49%</strong>
+  </div>
+</header>
+
+<!-- TASSI SOGLIA -->
+<div class="soglia-panel">
+  <div class="soglia-hdr" onclick="toggleSoglia()">
+    <div class="soglia-hdr-title">&#9888; Tassi Soglia Banca d&apos;Italia &mdash; <span id="trimLabel"></span></div>
+    <span class="soglia-btn" id="sBtn">Mostra / Modifica</span>
+  </div>
+  <div class="soglia-body" id="sBody">
+    <div class="soglia-grid">
+      <div class="si"><label>Prestiti pers. &le;5.000&euro;</label><input type="number" id="s1" value="18.08" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Prestiti pers. &gt;5.000&euro;</label><input type="number" id="s2" value="15.12" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Cred. finalizzato &le;5.000&euro;</label><input type="number" id="s3" value="16.52" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Cred. finalizzato &gt;5.000&euro;</label><input type="number" id="s4" value="14.28" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Leasing auto/moto</label><input type="number" id="s5" value="11.42" step="0.01" onchange="calcola()"></div>
+    </div>
+    <div class="snote">Aggiorna ogni trimestre &mdash; fonte: bancaditalia.it</div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="fp">
+  <div class="fp-title">Parametri finanziamento</div>
+  <div class="fg">
+    <div>
+      <label class="flabel">Importo (max 25.000&euro;)</label>
+      <input type="number" id="importo" value="15000" min="500" max="25000" step="100" oninput="calcola()">
+    </div>
+    <div>
+      <label class="flabel">Durata (mesi, max 120)</label>
+      <input type="number" id="mesi" value="60" min="6" max="120" oninput="calcola()">
+    </div>
+    <div>
+      <label class="flabel">Tasso base (fisso)</label>
+      <div class="base-chip">
+        <div>
+          <div class="base-chip-label">TAN base</div>
+          <div class="base-chip-value">7,49%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
+    <div>
+      <label class="flabel">Tasso applicato al cliente</label>
+      <select id="tanApp" onchange="calcola()"></select>
+    </div>
+    <div>
+      <label class="flabel">Spese istruttoria (max &euro;500)</label>
+      <input type="number" id="istruttoria" value="0" min="0" max="500" step="10" oninput="calcola()">
+    </div>
+  </div>
+</div>
+
+<!-- RISULTATI -->
+<div class="results">
+
+  <div class="card card-cliente" id="card_cli">
+    <div class="card-title">Riepilogo Cliente</div>
+    <div class="usura-banner" id="ub_cli"></div>
+    <div class="big-label">Rata mensile</div>
+    <div class="big-val" id="r_cli">&euro;&nbsp;&mdash;</div>
+    <div class="rate-row">
+      <span class="rpill rpill-tan">TAN <span id="tan_cli">&mdash;</span>%</span>
+      <span class="rpill rpill-taeg">TAEG <span id="taeg_cli">&mdash;</span>%</span>
+    </div>
+    <div class="reff-row">
+      <span class="reff-lbl">Rata effettiva (+&euro;5 incasso)</span>
+      <span class="reff-val" id="reff_cli">&mdash;</span>
+    </div>
+    <div class="pbox">
+      <span class="pbox-lbl">1&ordf; rata (rata+&euro;5+&euro;16 oneri)</span>
+      <span class="pbox-val" id="p1_cli">&mdash;</span>
+    </div>
+    <div class="div"></div>
+    <div class="row"><span class="row-l">Importo finanziato</span><span class="row-v neu" id="imp_cli">&mdash;</span></div>
+    <div class="row"><span class="row-l">Monte interessi</span><span class="row-v neu" id="int_cli">&mdash;</span></div>
+    <div class="row"><span class="row-l">Spese istruttoria</span><span class="row-v neu" id="istr_cli">&mdash;</span></div>
+    <div class="tbox">
+      <div class="tbox-title">Totale dovuto dal consumatore</div>
+      <div class="tr"><span class="tr-l">Rate effettive (&euro;<span id="reff2_cli">&mdash;</span> &times; <span id="nm_cli">&mdash;</span>)</span><span class="tr-v" id="rc_cli">&mdash;</span></div>
+      <div class="tr"><span class="tr-l">Bollo contratto</span><span class="tr-v">&euro;&nbsp;16,00</span></div>
+      <div class="tr"><span class="tr-l">Bollo rendiconto (&euro;2 &times; <span id="anni_cli">&mdash;</span> anni)</span><span class="tr-v" id="br_cli">&mdash;</span></div>
+      <div class="tsep"></div>
+      <div class="tf"><span class="tf-l">Totale dovuto</span><span class="tf-v" id="tot_cli">&mdash;</span></div>
+    </div>
+  </div>
+
+  <div class="card card-dealer">
+    <div class="card-title">Provvigione Dealer</div>
+    <div class="big-label">Provvigione totale</div>
+    <div class="big-val" id="prov_tot">&euro;&nbsp;&mdash;</div>
+    <div class="div"></div>
+    <div class="row"><span class="row-l">Tasso base</span><span class="row-v dim">7,49%</span></div>
+    <div class="row"><span class="row-l">Tasso applicato</span><span class="row-v neu" id="app_lbl">&mdash;</span></div>
+    <div class="row"><span class="row-l">Delta tasso</span><span class="row-v pur" id="delta_lbl">&mdash;</span></div>
+    <div class="div"></div>
+    <div class="row"><span class="row-l">Interessi al tasso base</span><span class="row-v dim" id="int_base">&mdash;</span></div>
+    <div class="row"><span class="row-l">Interessi al tasso applicato</span><span class="row-v neu" id="int_app">&mdash;</span></div>
+    <div class="row"><span class="row-l">Delta interessi</span><span class="row-v pur" id="delta_int">&mdash;</span></div>
+    <div class="prov-box">
+      <div class="prov-box-title">Dettaglio provvigione</div>
+      <div class="prov-tr"><span class="prov-tr-l">90% su delta interessi</span><span class="prov-tr-v" id="prov_delta">&mdash;</span></div>
+      <div class="prov-tr"><span class="prov-tr-l">Spese istruttoria</span><span class="prov-tr-v" id="prov_istr">&mdash;</span></div>
+      <div class="prov-sep"></div>
+      <div class="prov-tf"><span class="prov-tf-l">Totale provvigione</span><span class="prov-tf-v" id="prov_tot2">&mdash;</span></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Strumento ad uso interno &mdash; Tasso base fisso 7,49%<br>
+  1&ordf; rata = rata + &euro;5 incasso + &euro;16 oneri fiscali &middot; Totale = rate effettive + bollo contratto &euro;16 + bollo rendiconto &euro;2/anno<br>
+  TAEG calcolato dir. UE 2008/48/CE inclusa istruttoria &mdash; I calcoli sono indicativi e soggetti a conferma contrattuale.
+</footer>
+</div>
+
+<script>
+var TAN_BASE = 7.49;
+var SPESE    = 5;
+var ONERI_1A = 16;
+var BOLLO_C  = 16;
+var BOLLO_R  = 2;
+
+function f(v)  { return "€ "+v.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fp(v) { return v.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function pmt(p,tan,n) {
+  if(tan<=0) return p/n;
+  var i=tan/100/12;
+  return p*i/(1-Math.pow(1+i,-n));
+}
+
+function calcolaTAEG(P,rata,istruttoria,n) {
+  var of=ONERI_1A, r=0.005;
+  for(var it=0;it<200;it++) {
+    var npv=P-(rata+SPESE+of+istruttoria)/Math.pow(1+r,1);
+    for(var k=2;k<=n;k++) npv-=(rata+SPESE)/Math.pow(1+r,k);
+    var d=(rata+SPESE+of+istruttoria)/Math.pow(1+r,2);
+    for(var k=2;k<=n;k++) d+=k*(rata+SPESE)/Math.pow(1+r,k+1);
+    if(Math.abs(d)<1e-12) break;
+    var rn=r-npv/d; if(Math.abs(rn-r)<1e-9){r=rn;break;} r=rn;
+  }
+  return (Math.pow(1+r,12)-1)*100;
+}
+
+function getSoglia(P) {
+  return P<=5000
+    ? parseFloat(document.getElementById("s3").value)||999
+    : parseFloat(document.getElementById("s4").value)||999;
+}
+
+function popolaTassi() {
+  var sel=document.getElementById("tanApp");
+  sel.innerHTML="";
+  var t=TAN_BASE;
+  while(t<=14.991) {
+    var opt=document.createElement("option");
+    opt.value=t.toFixed(2);
+    var lbl=t.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2});
+    opt.textContent=lbl+"%" + (Math.abs(t-TAN_BASE)<0.001?" (base)":"");
+    if(Math.abs(t-TAN_BASE)<0.001) opt.selected=true;
+    sel.appendChild(opt);
+    t=Math.round((t+0.50)*100)/100;
+  }
+}
+
+function calcola() {
+  var P=parseFloat(document.getElementById("importo").value)||0;
+  if(P>25000) P=25000;
+  var n=parseInt(document.getElementById("mesi").value)||1;
+  if(n>120) n=120;
+  var tApp=parseFloat(document.getElementById("tanApp").value)||TAN_BASE;
+  var istr=Math.min(parseFloat(document.getElementById("istruttoria").value)||0,500);
+  var anni=Math.ceil(n/12);
+  var sog=getSoglia(P);
+
+  var rata   =Math.ceil(pmt(P,tApp,n));
+  var intApp =rata*n-P;
+  var rEff   =rata+SPESE;
+  var p1     =rata+SPESE+ONERI_1A;
+  var tot    =rEff*n+BOLLO_C+BOLLO_R*anni;
+  var taeg   =calcolaTAEG(P,rata,istr,n);
+
+  var rataBase=Math.ceil(pmt(P,TAN_BASE,n));
+  var intBase =rataBase*n-P;
+  var deltaInt=intApp-intBase;
+  var provDelta=deltaInt*0.90;
+  var provTot =provDelta+istr;
+  var delta   =Math.round((tApp-TAN_BASE)*100)/100;
+
+  // cliente
+  document.getElementById("tan_cli").textContent  =fp(tApp);
+  document.getElementById("taeg_cli").textContent =fp(taeg);
+  document.getElementById("r_cli").textContent    =f(rata);
+  document.getElementById("reff_cli").textContent =f(rEff);
+  document.getElementById("reff2_cli").textContent=fp(rEff);
+  document.getElementById("p1_cli").textContent   =f(p1);
+  document.getElementById("imp_cli").textContent  =f(P);
+  document.getElementById("int_cli").textContent  =f(intApp);
+  document.getElementById("istr_cli").textContent =istr>0?f(istr):"€ 0,00";
+  document.getElementById("nm_cli").textContent   =n;
+  document.getElementById("anni_cli").textContent =anni;
+  document.getElementById("rc_cli").textContent   =f(rEff*n);
+  document.getElementById("br_cli").textContent   =f(BOLLO_R*anni);
+  document.getElementById("tot_cli").textContent  =f(tot);
+
+  // dealer
+  document.getElementById("app_lbl").textContent  =fp(tApp)+"%";
+  document.getElementById("delta_lbl").textContent=(delta>0?"+":"")+fp(delta)+"%";
+  document.getElementById("int_base").textContent =f(intBase);
+  document.getElementById("int_app").textContent  =f(intApp);
+  document.getElementById("delta_int").textContent=f(deltaInt);
+  document.getElementById("prov_delta").textContent=f(provDelta);
+  document.getElementById("prov_istr").textContent=f(istr);
+  document.getElementById("prov_tot").textContent =f(provTot);
+  document.getElementById("prov_tot2").textContent=f(provTot);
+
+  // usura
+  var card=document.getElementById("card_cli"), ban=document.getElementById("ub_cli");
+  if(taeg>sog) {
+    card.classList.add("usura");
+    ban.className="usura-banner on";
+    ban.innerHTML="⚠️ TAEG "+fp(taeg)+"% supera la soglia usura ("+fp(sog)+"%) — Operazione non consentita.";
+  } else {
+    card.classList.remove("usura");
+    ban.className="usura-banner";
+    ban.innerHTML="";
+  }
+}
+
+function toggleSoglia() {
+  document.getElementById("sBody").classList.toggle("open");
+}
+
+function trimestreStr() {
+  var m=new Date().getMonth()+1, y=new Date().getFullYear();
+  return (m<=3?"I":m<=6?"II":m<=9?"III":"IV")+" trim. "+y;
+}
+
+document.getElementById("trimLabel").textContent=trimestreStr();
+popolaTassi();
+calcola();
+</script>
+</body>
+</html>
