@@ -222,7 +222,7 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
 
   <div class="card card-dealer">
     <div class="card-title">Provvigione Dealer</div>
-    <div class="big-label">Provvigione su delta interessi</div>
+    <div class="big-label">Totale provvigione dealer</div>
     <div class="big-val" id="prov_tot">&euro;&nbsp;&mdash;</div>
     <div class="div"></div>
     <div class="row"><span class="row-l">Tasso base</span><span class="row-v dim">6,99%</span></div>
@@ -235,8 +235,9 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
     <div class="prov-box">
       <div class="prov-box-title">Dettaglio provvigione</div>
       <div class="prov-tr"><span class="prov-tr-l">100% su delta interessi</span><span class="prov-tr-v" id="prov_delta">&mdash;</span></div>
-      <div class="prov-sep"></div>
       <div class="prov-tr" style="margin-top:.3rem"><span class="prov-tr-l" style="color:var(--gold)">Spese istruttoria (fattura dealer)</span><span class="prov-tr-v" style="color:var(--gold);font-weight:700" id="prov_istr">&mdash;</span></div>
+      <div class="prov-sep"></div>
+      <div class="prov-tf"><span class="prov-tf-l">Totale incasso dealer</span><span class="prov-tf-v" id="prov_totale">&mdash;</span></div>
     </div>
   </div>
 
@@ -342,8 +343,9 @@ function calcola() {
     pvBase+=rataBase/Math.pow(1+iNom,k);
     pvApp +=rata    /Math.pow(1+iNom,k);
   }
-  var provDelta=Math.abs(tApp-TAN_BASE)<0.001 ? 0 : pvApp-pvBase;
-  var deltaInt =provDelta; // per display
+  var provDelta  = Math.abs(tApp-TAN_BASE)<0.001 ? 0 : pvApp-pvBase;
+  var provTotale = provDelta + istr;
+  var deltaInt   = provDelta; // per display
 
   // cliente
   document.getElementById("tan_cli").textContent  =fp(tApp)+" / eff. "+fp(tApp_eff);
@@ -370,7 +372,7 @@ function calcola() {
   document.getElementById("delta_int").textContent=f(deltaInt);
   document.getElementById("prov_delta").textContent=f(provDelta);
   document.getElementById("prov_istr").textContent=f(istr);
-  document.getElementById("prov_tot").textContent =f(provDelta);
+  document.getElementById("prov_tot").textContent =f(provTotale);
 
 
   // usura
