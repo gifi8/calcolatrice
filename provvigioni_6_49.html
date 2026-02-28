@@ -179,7 +179,7 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
     </div>
     <div>
       <label class="flabel">Spese istruttoria (max &euro;500)</label>
-      <input type="number" id="istruttoria" value="0" min="0" max="500" step="10" oninput="if(this.value>500)this.value=500;calcola()">
+      <input type="number" id="istruttoria" value="0" min="0" max="500" step="10" oninput="var v=parseFloat(this.value)||0;if(v>500){this.value=500;}if(v<0){this.value=0;}calcola()" onblur="if(parseFloat(this.value)>500)this.value=500;">
     </div>
   </div>
 </div>
@@ -316,7 +316,7 @@ function calcola() {
   var n=parseInt(document.getElementById("mesi").value)||1;
   if(n>120) n=120;
   var tApp=parseFloat(document.getElementById("tanApp").value)||TAN_BASE;
-  var istr=Math.min(parseFloat(document.getElementById("istruttoria").value)||0,500);
+  var istr=Math.min(Math.max(parseFloat(document.getElementById("istruttoria").value)||0,0),500);document.getElementById("istruttoria").value=istr;
   var anni=Math.ceil(n/12);
 
   // Importo finanziato = importo richiesto + spese istruttoria

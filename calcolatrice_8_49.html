@@ -175,7 +175,7 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
   </div>
   <div style="margin-top:.75rem">
     <label class="flabel">Spese istruttoria (max &euro;500)</label>
-    <input type="number" id="istruttoria" value="0" min="0" max="500" step="10" oninput="calcola()" style="max-width:200px;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.6rem .8rem;color:var(--txt);font-family:'DM Mono',monospace;font-size:.95rem;outline:none">
+    <input type="number" id="istruttoria" value="0" min="0" max="500" step="10" oninput="var v=parseFloat(this.value)||0;if(v>500){this.value=500;}if(v<0){this.value=0;}calcola()" onblur="if(parseFloat(this.value)>500)this.value=500;">
   </div>
 </div>
 
@@ -382,7 +382,7 @@ function calcola(){
   var n=parseInt(document.getElementById("mesi").value)||1;
   if(n>120) n=120;
   var gu=document.getElementById("gu").checked;
-  var istr=Math.min(parseFloat(document.getElementById("istruttoria").value)||0,500);
+  var istr=Math.min(Math.max(parseFloat(document.getElementById("istruttoria").value)||0,0),500);document.getElementById("istruttoria").value=istr;
   P=P+istr;
   var tanA=TAN_BASE/2;
   var sog=getSoglia(P);
