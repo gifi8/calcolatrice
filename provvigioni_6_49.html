@@ -196,6 +196,7 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
     <div class="rate-row">
       <span class="rpill rpill-tan">TAN <span id="tan_cli">&mdash;</span>%</span>
       <span class="rpill rpill-taeg">TAEG <span id="taeg_cli">&mdash;</span>%</span>
+      <span class="rpill" style="background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.3)">TAN eff. <span id="taneff_cli">&mdash;</span>%</span>
     </div>
     <div class="reff-row">
       <span class="reff-lbl">Rata effettiva (+&euro;5 incasso)</span>
@@ -298,6 +299,16 @@ function popolaTassi() {
   }
 }
 
+function tanEff(P, rata, n) {
+  var lo=0.000001, hi=2.0;
+  for(var i=0;i<200;i++) {
+    var mid=(lo+hi)/2;
+    var pv=rata*(1-Math.pow(1+mid,-n))/mid;
+    if(pv>P) lo=mid; else hi=mid;
+  }
+  return mid*12*100;
+}
+
 function calcola() {
   var P=parseFloat(document.getElementById("importo").value)||0;
   if(P>25000) P=25000;
@@ -311,22 +322,33 @@ function calcola() {
   var PF = P + istr;
   var sog=getSoglia(PF);
 
-  var rata   =Math.ceil(pmt(PF,tApp,n));
-  var intApp =rata*n-PF;
-  var rEff   =rata+SPESE;
-  var p1     =rata+SPESE+ONERI_1A;
-  var tot    =rEff*n+BOLLO_C+BOLLO_R*anni;
-  var taeg   =calcolaTAEG(PF,rata,0,n);
+  var rata     =Math.ceil(pmt(PF,tApp,n));
+  var tApp_eff =tanEff(PF,rata,n);
+  var intApp   =rata*n-PF;
+  var rEff     =rata+SPESE;
+  var p1       =rata+SPESE+ONERI_1A;
+  var tot      =rEff*n+BOLLO_C+BOLLO_R*anni;
+  var taeg     =calcolaTAEG(PF,rata,0,n);
 
-  var rataBase=Math.ceil(pmt(PF,TAN_BASE,n));
-  var intBase =rataBase*n-PF;
-  var deltaInt=intApp-intBase;
-  var provDelta=deltaInt*1.00;
-  var delta   =Math.round((tApp-TAN_BASE)*100)/100;
+  var rataBase  =pmt(PF,TAN_BASE,n); // esatta non arrotondata
+  var tBase_eff =tanEff(PF,Math.ceil(rataBase),n);
+  var intBase   =Math.ceil(rataBase)*n-PF;
+  var delta     =Math.round((tApp_eff-tBase_eff)*100)/100;
+
+  // Provvigione = (PV rata applicata ceil - PV rata base esatta) scontati al TAN nominale base
+  var iNom=TAN_BASE/100/12;
+  var pvBase=0, pvApp=0;
+  for(var k=1;k<=n;k++){
+    pvBase+=rataBase/Math.pow(1+iNom,k);
+    pvApp +=rata    /Math.pow(1+iNom,k);
+  }
+  var provDelta=Math.abs(tApp-TAN_BASE)<0.001 ? 0 : pvApp-pvBase;
+  var deltaInt =provDelta; // per display
 
   // cliente
-  document.getElementById("tan_cli").textContent  =fp(tApp);
+  document.getElementById("tan_cli").textContent  =fp(tApp)+" / eff. "+fp(tApp_eff);
   document.getElementById("taeg_cli").textContent =fp(taeg);
+  document.getElementById("taneff_cli").textContent=fp(tApp_eff);
   document.getElementById("r_cli").textContent    =f(rata);
   document.getElementById("reff_cli").textContent =f(rEff);
   document.getElementById("reff2_cli").textContent=fp(rEff);
@@ -342,7 +364,7 @@ function calcola() {
 
   // dealer
   document.getElementById("app_lbl").textContent  =fp(tApp)+"%";
-  document.getElementById("delta_lbl").textContent=(delta>0?"+":"")+fp(delta)+"%";
+  document.getElementById("delta_lbl").textContent=(delta>0?"+":"")+fp(delta)+"% (eff.)";
   document.getElementById("int_base").textContent =f(intBase);
   document.getElementById("int_app").textContent  =f(intApp);
   document.getElementById("delta_int").textContent=f(deltaInt);
