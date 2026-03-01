@@ -1,80 +1,54 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Calc Fin">
-<meta name="theme-color" content="#00E5A0">
-<title>Calcolatore Finanziamento</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0c10;--surf:#111418;--brd:#1e2530;
-  --acc:#00E5A0;--acc2:#0099ff;--purple:#a855f7;
-  --txt:#e8ecf0;--mut:#5a6270;
-}
-html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace}
-body{display:flex;flex-direction:column;min-height:100dvh;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
-body::before{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(0,229,160,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
-.wrap{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:2rem 1.25rem 1.5rem;max-width:520px;margin:0 auto;width:100%}
-
-/* header */
-.header{text-align:center;margin-bottom:2rem}
-.logo{width:72px;height:72px;border-radius:18px;background:var(--surf);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem}
-.logo svg{width:40px;height:40px}
-.app-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
-.app-sub{font-size:.65rem;color:var(--mut);text-transform:uppercase;letter-spacing:.12em;margin-top:.4rem}
-
-/* sezioni */
-.section-label{font-size:.62rem;color:var(--mut);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.75rem;padding-left:.25rem}
-.section-divider{height:1px;background:var(--brd);margin:1.25rem 0}
-
-/* griglia calcolatrici */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.5rem}
-
-/* card finanziamento */
-.card{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:1.25rem .75rem;cursor:pointer;text-decoration:none;color:var(--txt);transition:border-color .2s,transform .15s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;transform:scaleX(0);transition:transform .2s;transform-origin:left}
-.card-fin::before{background:var(--acc)}
-.card-prov::before{background:var(--purple)}
-.card:active{transform:scale(.97)}
-.card-fin:active{border-color:var(--acc)}
-.card-prov:active{border-color:var(--purple)}
-.card:active::before{transform:scaleX(1)}
-
-.card-rate{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;line-height:1}
-.card-fin .card-rate{color:var(--acc)}
-.card-prov .card-rate{color:var(--purple)}
-.card-label{font-size:.58rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:.3rem}
-.card-sublabel{font-size:.52rem;color:var(--brd);margin-top:.15rem}
-.card-arrow{position:absolute;bottom:.6rem;right:.75rem;font-size:.7rem;color:var(--brd)}
-
-/* card provvigioni full width */
-.grid-prov{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:.5rem}
-@media(max-width:400px){.grid-prov{grid-template-columns:1fr}}
-
-/* ios hint */
-.ios-hint{display:none;background:rgba(0,153,255,.07);border:1px solid rgba(0,153,255,.2);border-radius:12px;padding:.85rem 1.25rem;margin-bottom:1.25rem;font-size:.7rem;color:#aaa;line-height:1.7;text-align:center}
-.ios-hint.visible{display:block}
-.ios-hint strong{color:#0099ff}
-
-footer{margin-top:auto;text-align:center;font-size:.58rem;color:var(--mut);letter-spacing:.04em;padding-top:1rem;line-height:1.8}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Calc Fin">
+  <meta name="theme-color" content="#00E5A0">
+  <title>Calcolatore Finanziamento</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#0a0c10;--surface:#111418;--border:#1e2530;--accent:#00E5A0;--acc2:#0099ff;--purple:#a855f7;--text:#e8ecf0;--muted:#5a6270; }
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;}
+    body{display:flex;flex-direction:column;min-height:100dvh;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);}
+    body::before{content:'';position:fixed;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(0,229,160,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
+    .wrap{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:2rem 1.25rem 1.5rem;max-width:520px;margin:0 auto;width:100%;}
+    .header{text-align:center;margin-bottom:2rem;}
+    .logo{width:72px;height:72px;border-radius:18px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;}
+    .logo svg{width:40px;height:40px;}
+    .app-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;line-height:1.1;}
+    .app-sub{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-top:0.4rem;}
+    .section{margin-bottom:1.75rem;}
+    .section-header{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;}
+    .section-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.15em;padding-left:0.25rem;}
+    .section-badge{font-size:.5rem;padding:.15rem .4rem;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+    .badge-120{background:rgba(0,229,160,.1);color:var(--accent);border:1px solid rgba(0,229,160,.3);}
+    .badge-72{background:rgba(0,153,255,.1);color:var(--acc2);border:1px solid rgba(0,153,255,.3);}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;}
+    .card{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1rem 0.75rem;cursor:pointer;text-decoration:none;color:var(--text);transition:border-color 0.2s,transform 0.15s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;transform:scaleX(0);transition:transform 0.2s;transform-origin:left;}
+    .card:active{transform:scale(0.97);}
+    .card-120::before{background:var(--accent);} .card-120:active{border-color:var(--accent);}
+    .card-72::before{background:var(--acc2);} .card-72:active{border-color:var(--acc2);}
+    .card-prov::before{background:var(--purple);} .card-prov:active{border-color:var(--purple);}
+    .card-rate{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1;}
+    .card-120 .card-rate{color:var(--accent);} .card-72 .card-rate{color:var(--acc2);} .card-prov .card-rate{color:var(--purple);}
+    .card-label{font-size:0.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.3rem;}
+    .card-arrow{position:absolute;bottom:0.5rem;right:0.65rem;font-size:0.65rem;color:var(--border);}
+    .ios-hint{display:none;background:rgba(0,153,255,0.07);border:1px solid rgba(0,153,255,0.2);border-radius:12px;padding:0.85rem 1.25rem;margin-bottom:1.25rem;font-size:0.7rem;color:#aaa;line-height:1.7;text-align:center;}
+    .ios-hint.visible{display:block;} .ios-hint strong{color:#0099ff;}
+    footer{margin-top:auto;text-align:center;font-size:0.58rem;color:var(--muted);letter-spacing:0.04em;padding-top:1rem;line-height:1.8;}
+  </style>
 </head>
 <body>
 <div class="wrap">
-
-  <div class="ios-hint" id="iosHint">
-    Per installare: tocca <strong>&#11014; Condividi</strong> in Safari<br>
-    poi <strong>"Aggiungi a schermata Home"</strong>
-  </div>
-
+  <div class="ios-hint" id="iosHint">Per installare: tocca <strong>&#11014; Condividi</strong> in Safari<br>poi <strong>"Aggiungi a schermata Home"</strong></div>
   <div class="header">
     <div class="logo">
       <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,30 +58,65 @@ footer{margin-top:auto;text-align:center;font-size:.58rem;color:var(--mut);lette
       </svg>
     </div>
     <div class="app-title">Calcolatore<br>Finanziamento</div>
-    <div class="app-sub">Strumento ad uso interno</div>
+    <div class="app-sub">Seleziona il tasso base</div>
   </div>
 
-  <!-- CALCOLATRICI FINANZIAMENTO -->
-  <div class="section-label">&#9632; Simulatore finanziamento</div>
-  <div class="grid">
-    <a class="card card-fin" href="calcolatrice_6_49.html"><div class="card-rate">6,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
-    <a class="card card-fin" href="calcolatrice_6_99.html"><div class="card-rate">6,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
-    <a class="card card-fin" href="calcolatrice_7_49.html"><div class="card-rate">7,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
-    <a class="card card-fin" href="calcolatrice_7_99.html"><div class="card-rate">7,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
-    <a class="card card-fin" href="calcolatrice_8_49.html"><div class="card-rate">8,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
-    <a class="card card-fin" href="calcolatrice_8_99.html"><div class="card-rate">8,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
-    <a class="card card-fin" href="calcolatrice_9_49.html"><div class="card-rate">9,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
-    <a class="card card-fin" href="calcolatrice_9_99.html"><div class="card-rate">9,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+  <div class="section">
+    <div class="section-header">
+      <span class="section-label">Calcolatrici con contributo</span>
+      <span class="section-badge badge-120">max 120 mesi</span>
+    </div>
+    <div class="grid">
+      <a class="card card-120" href="calcolatrice_6_49.html"><div class="card-rate">6,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-120" href="calcolatrice_6_99.html"><div class="card-rate">6,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-120" href="calcolatrice_7_49.html"><div class="card-rate">7,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-120" href="calcolatrice_7_99.html"><div class="card-rate">7,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-120" href="calcolatrice_8_49.html"><div class="card-rate">8,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-120" href="calcolatrice_8_99.html"><div class="card-rate">8,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-120" href="calcolatrice_9_49.html"><div class="card-rate">9,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-120" href="calcolatrice_9_99.html"><div class="card-rate">9,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+    </div>
   </div>
 
-  <div class="section-divider"></div>
+  <div class="section">
+    <div class="section-header">
+      <span class="section-label">Calcolatrici con contributo</span>
+      <span class="section-badge badge-72">max 72 mesi</span>
+    </div>
+    <div class="grid">
+      <a class="card card-72" href="calcolatrice_72_6_49.html"><div class="card-rate">6,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-72" href="calcolatrice_72_6_99.html"><div class="card-rate">6,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-72" href="calcolatrice_72_7_49.html"><div class="card-rate">7,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-72" href="calcolatrice_72_7_99.html"><div class="card-rate">7,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-72" href="calcolatrice_72_8_49.html"><div class="card-rate">8,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-72" href="calcolatrice_72_8_99.html"><div class="card-rate">8,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-72" href="calcolatrice_72_9_49.html"><div class="card-rate">9,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-72" href="calcolatrice_72_9_99.html"><div class="card-rate">9,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+    </div>
+  </div>
 
-  <!-- CALCOLATRICI PROVVIGIONI -->
-  <div class="section-label">&#9632; Provvigioni dealer</div>
-  <div class="grid-prov">
-    <a class="card card-prov" href="provvigioni_6_49.html"><div class="card-rate">6,49%</div><div class="card-label">Base</div><div class="card-arrow">›</div></a>
-    <a class="card card-prov" href="provvigioni_6_99.html"><div class="card-rate">6,99%</div><div class="card-label">Base</div><div class="card-arrow">›</div></a>
-    <a class="card card-prov" href="provvigioni_7_49.html"><div class="card-rate">7,49%</div><div class="card-label">Base</div><div class="card-arrow">›</div></a>
+  <div class="section">
+    <div class="section-header">
+      <span class="section-label">Calcolatrici provvigioni</span>
+      <span class="section-badge badge-120">max 120 mesi</span>
+    </div>
+    <div class="grid">
+      <a class="card card-prov" href="provvigioni_6_49.html"><div class="card-rate">6,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-prov" href="provvigioni_6_99.html"><div class="card-rate">6,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-prov" href="provvigioni_7_49.html"><div class="card-rate">7,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-label">Calcolatrici provvigioni</span>
+      <span class="section-badge badge-72">max 72 mesi</span>
+    </div>
+    <div class="grid">
+      <a class="card card-prov" href="provvigioni_72_6_49.html"><div class="card-rate">6,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-prov" href="provvigioni_72_6_99.html"><div class="card-rate">6,99%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+      <a class="card card-prov" href="provvigioni_72_7_49.html"><div class="card-rate">7,49%</div><div class="card-label">TAN base</div><div class="card-arrow">›</div></a>
+    </div>
   </div>
 
   <footer>
@@ -115,14 +124,13 @@ footer{margin-top:auto;text-align:center;font-size:.58rem;color:var(--mut);lette
     I calcoli sono indicativi e soggetti a conferma contrattuale
   </footer>
 </div>
-
 <script>
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
   }
-  const isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
-  if(isIos&&!isStandalone) document.getElementById('iosHint').classList.add('visible');
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isIos && !isStandalone) document.getElementById('iosHint').classList.add('visible');
 </script>
 </body>
 </html>
