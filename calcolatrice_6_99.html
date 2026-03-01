@@ -208,6 +208,10 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
       <div class="tsep"></div>
       <div class="tf"><span class="tf-l">Totale dovuto</span><span class="tf-v" id="tot_s">&mdash;</span></div>
     </div>
+    <div class="netbox" id="istr_box_s" style="display:none;margin-top:.5rem;border-color:var(--gold)">
+      <span class="net-l" style="color:var(--gold);font-size:.5rem">Sp. istruttoria (fattura dealer)</span>
+      <span class="net-v" style="color:var(--gold);font-size:.8rem" id="istr_earn_s">&mdash;</span>
+    </div>
   </div>
 
   <div class="card ca" id="card_a">
@@ -229,6 +233,10 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
     <div class="row"><span class="row-l">Interessi cliente</span><span class="row-v neu" id="int_a">&mdash;</span></div>
     <div class="row"><span class="row-l">Contributo dealer</span><span class="row-v neg" id="con_a">&mdash;</span></div>
     <div class="netbox"><span class="net-l">Netto dealer</span><span class="net-v" id="net_a">&mdash;</span></div>
+    <div class="netbox" id="istr_box_a" style="display:none;border-color:var(--gold)">
+      <span class="net-l" style="color:var(--gold);font-size:.5rem">Sp. istruttoria (fattura dealer)</span>
+      <span class="net-v" style="color:var(--gold);font-size:.8rem" id="istr_earn_a">&mdash;</span>
+    </div>
     <div class="tbox">
       <div class="tbox-title">Totale dovuto consumatore</div>
       <div class="tr"><span class="tr-l">Rata mensile &times; <span id="nm_a">&mdash;</span> mesi</span><span class="tr-v" id="rc_a">&mdash;</span></div>
@@ -259,6 +267,10 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
     <div class="row"><span class="row-l">Interessi cliente</span><span class="row-v dim">&euro;&nbsp;0,00</span></div>
     <div class="row"><span class="row-l">Contributo dealer</span><span class="row-v neg" id="con_z">&mdash;</span></div>
     <div class="netbox"><span class="net-l">Netto dealer</span><span class="net-v" id="net_z">&mdash;</span></div>
+    <div class="netbox" id="istr_box_z" style="display:none;border-color:var(--gold)">
+      <span class="net-l" style="color:var(--gold);font-size:.5rem">Sp. istruttoria (fattura dealer)</span>
+      <span class="net-v" style="color:var(--gold);font-size:.8rem" id="istr_earn_z">&mdash;</span>
+    </div>
     <div class="tbox">
       <div class="tbox-title">Totale dovuto consumatore</div>
       <div class="tr"><span class="tr-l">Rata mensile &times; <span id="nm_z">&mdash;</span> mesi</span><span class="tr-v" id="rc_z">&mdash;</span></div>
@@ -342,6 +354,10 @@ function setCard(px,P,imp,rata,n,extra,extra_istr){
   document.getElementById("p1_"+px).textContent   =f(p1);
   document.getElementById("imp_orig_"+px).textContent=f(imp-extra_istr);
   document.getElementById("istr_"+px).textContent  =extra_istr>0?f(extra_istr):"€ 0,00";
+  var istrBox=document.getElementById("istr_box_"+px);
+  var istrEarn=document.getElementById("istr_earn_"+px);
+  if(istrBox){istrBox.style.display=extra_istr>0?"flex":"none";}
+  if(istrEarn){istrEarn.textContent=f(extra_istr);}
   document.getElementById("imp_"+px).textContent  =f(imp);
   document.getElementById("nm_"+px).textContent   =n;
   document.getElementById("nm2_"+px).textContent  =n;
