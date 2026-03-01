@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#00e5a0">
+<title>Finanziamento TAN 6,99%</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0c10;--surf:#111418;--surf2:#181c22;--brd:#252a33;
+  --acc:#00e5a0;--acc2:#0099ff;--warn:#ff6b35;--gold:#f59e0b;
+  --txt:#e8ecf0;--mut:#5a6270;--red:#ef4444;
+}
+body{background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace;min-height:100vh;padding:1.5rem 1rem;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-30%;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(ellipse,rgba(0,229,160,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+.wrap{max-width:1000px;margin:0 auto;position:relative;z-index:1}
+
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--brd);flex-wrap:wrap;gap:.75rem}
+.htitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.03em}
+.hsub{font-size:.6rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:.15rem}
+.badge{background:var(--surf2);border:1px solid var(--acc);border-radius:6px;padding:.3rem .9rem;text-align:center}
+.badge span{display:block;font-size:.5rem;color:var(--mut);text-transform:uppercase;letter-spacing:.12em}
+.badge strong{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--acc);line-height:1.1}
+
+/* soglia panel — aperto di default */
+.soglia-panel{background:var(--surf);border:1px solid var(--brd);border-radius:8px;padding:.5rem .75rem;margin-bottom:.75rem}
+.soglia-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.soglia-hdr-title{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.1em}
+.soglia-btn{font-size:.6rem;color:var(--acc);background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);border-radius:4px;padding:.18rem .5rem;cursor:pointer;white-space:nowrap}
+.soglia-body{margin-top:.9rem}
+.soglia-body.closed{display:none}
+.soglia-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}
+.si{background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.3rem .45rem}
+.si label{font-size:.45rem;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;display:block}
+.si input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--brd);padding:.1rem 0;color:var(--acc2);font-family:'DM Mono',monospace;font-size:.75rem;font-weight:500;outline:none}
+.si input:focus{border-bottom-color:var(--acc2)}
+.snote{font-size:.56rem;color:var(--mut);margin-top:.75rem;line-height:1.7}
+.snote strong{color:var(--acc2)}
+.slink{display:inline-block;margin-top:.3rem;font-size:.58rem;color:var(--acc);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* alert usura globale — in cima alla pagina */
+.page-alert{display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:.68rem;color:var(--red);line-height:1.6}
+.page-alert.on{display:block}
+.page-alert strong{font-family:'Syne',sans-serif;font-size:.8rem;display:block;margin-bottom:.25rem}
+
+/* form */
+.fp{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:1.1rem;margin-bottom:1.25rem}
+.fg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;align-items:end}
+@media(max-width:680px){.fg{grid-template-columns:1fr 1fr}.rg{grid-template-columns:1fr!important}}
+@media(max-width:400px){.fg{grid-template-columns:1fr}}
+.flabel{display:block;font-size:.58rem;color:var(--mut);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.35rem}
+input[type=number]{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.6rem .8rem;color:var(--txt);font-family:'DM Mono',monospace;font-size:.95rem;outline:none;transition:border-color .2s}
+input[type=number]:focus{border-color:var(--acc)}
+.gw{display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;background:var(--bg);border:1px solid var(--brd);border-radius:6px;cursor:pointer;user-select:none;transition:border-color .2s}
+.gw:hover{border-color:var(--acc)}
+.tog{position:relative;width:36px;height:20px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.sld{position:absolute;inset:0;background:var(--brd);border-radius:20px;transition:background .2s;cursor:pointer}
+.sld::before{content:'';position:absolute;height:14px;width:14px;left:3px;top:3px;background:var(--mut);border-radius:50%;transition:transform .2s,background .2s}
+input:checked+.sld{background:rgba(0,229,160,.3)}
+input:checked+.sld::before{transform:translateX(16px);background:var(--acc)}
+.gl{font-size:.68rem;color:var(--mut);line-height:1.3}
+.gl strong{color:var(--acc);display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.08em}
+
+/* cards */
+.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem}
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:1.1rem;position:relative;overflow:hidden;transition:border-color .25s}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transition:background .25s}
+.cs::before{background:var(--mut)}.ca::before{background:var(--acc2)}.cz::before{background:var(--acc)}
+.card.usura{border-color:var(--red)!important}
+.card.usura::before{background:var(--red)!important}
+.card-usura-strip{display:none;background:var(--red);color:#fff;font-size:.55rem;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.1em;text-align:center;padding:.25rem;margin:-1.1rem -1.1rem .75rem -1.1rem}
+.card.usura .card-usura-strip{display:block}
+
+.ctitle{font-size:.58rem;text-transform:uppercase;letter-spacing:.15em;margin-bottom:.7rem;font-family:'Syne',sans-serif}
+.cs .ctitle{color:var(--mut)}.ca .ctitle{color:var(--acc2)}.cz .ctitle{color:var(--acc)}.card.usura .ctitle{color:var(--red)}
+.chip{display:inline-block;font-size:.58rem;padding:.12rem .4rem;border-radius:4px;font-weight:500;margin-bottom:.55rem}
+.chip-s{background:rgba(90,98,112,.2);color:var(--mut);border:1px solid var(--brd)}
+.chip-a{background:rgba(0,153,255,.1);color:var(--acc2);border:1px solid rgba(0,153,255,.3)}
+.chip-z{background:rgba(0,229,160,.1);color:var(--acc);border:1px solid rgba(0,229,160,.3)}
+.rate-row{display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap}
+.rpill{font-size:.58rem;padding:.15rem .45rem;border-radius:5px;font-weight:500}
+.rpill-tan{background:rgba(90,98,112,.2);color:var(--mut);border:1px solid var(--brd)}
+.rpill-taeg{background:rgba(0,153,255,.1);color:var(--acc2);border:1px solid rgba(0,153,255,.25)}
+.card.usura .rpill-taeg{background:rgba(239,68,68,.12);color:var(--red);border-color:rgba(239,68,68,.3)}
+.rlabel{font-size:.52rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.1rem}
+.rval{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:500;line-height:1;margin-bottom:.3rem;color:var(--mut)}
+.cs .rval{color:var(--txt)}.ca .rval{color:var(--acc2)}.cz .rval{color:var(--acc)}.card.usura .rval{color:var(--red)}
+.reff-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--brd);border-radius:6px;padding:.35rem .65rem;margin-bottom:.6rem}
+.reff-lbl{font-size:.55rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.reff-val{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--txt)}
+.card.usura .reff-val{color:var(--red)}
+.pbox{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.22);border-radius:6px;padding:.45rem .75rem;margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center}
+.pbox-lbl{font-size:.52rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold)}
+.pbox-val{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;color:var(--gold)}
+.div{height:1px;background:var(--brd);margin:.6rem 0}
+.row{display:flex;justify-content:space-between;align-items:baseline;font-size:.67rem;margin-bottom:.35rem;gap:.35rem}
+.row-l{color:var(--mut);flex-shrink:0;font-size:.62rem}.row-v{font-weight:500;text-align:right}
+.neg{color:var(--warn)}.neu{color:var(--txt)}.dim{color:var(--mut)}.gld{color:var(--gold)}
+.netbox{background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.5rem .75rem;display:flex;justify-content:space-between;align-items:center;margin-top:.5rem}
+.net-l{font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}
+.net-v{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--acc)}
+.tbox{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:.55rem .75rem;margin-top:.55rem}
+.tbox-title{font-size:.52rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:.4rem;font-family:'Syne',sans-serif}
+.tr{display:flex;justify-content:space-between;font-size:.62rem;margin-bottom:.25rem}
+.tr-l{color:var(--mut)}.tr-v{color:var(--txt);font-weight:500}
+.tsep{height:1px;background:rgba(245,158,11,.15);margin:.35rem 0}
+.tf{display:flex;justify-content:space-between;font-size:.8rem}
+.tf-l{color:var(--gold);font-family:'Syne',sans-serif;font-weight:700}
+.tf-v{color:var(--gold);font-family:'Syne',sans-serif;font-weight:800}
+.gbadge{display:none;font-size:.5rem;text-transform:uppercase;color:var(--acc);background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);border-radius:4px;padding:.1rem .3rem;margin-left:.3rem;vertical-align:middle}
+footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-align:center;font-size:.56rem;color:var(--mut);line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="htitle">Simulatore Finanziamento</div>
+    <div class="hsub">Max 25.000&euro; &middot; Max 72 mesi &middot; Spese incasso &euro;4/rata</div>
+  </div>
+  <div class="badge"><span>TAN base</span><strong>6,99%</strong></div>
+</header>
+
+<!-- ALERT GLOBALE USURA -->
+<div class="page-alert" id="pageAlert">
+  <strong>&#9888; Attenzione — Soglia Usura Superata</strong>
+  <span id="pageAlertMsg"></span>
+</div>
+
+<!-- TASSI SOGLIA — aperto di default -->
+<div class="soglia-panel">
+  <div class="soglia-hdr" onclick="toggleSoglia()">
+    <div class="soglia-hdr-title">&#9888; Tassi Soglia Banca d&apos;Italia &mdash; <span id="trimLabel"></span></div>
+    <span class="soglia-btn" id="sBtn">Chiudi &#9650;</span>
+  </div>
+  <div class="soglia-body" id="sBody">
+    <div class="soglia-grid">
+      <div class="si"><label>Prestiti pers. &le;5k</label><input type="number" id="s1" value="18.08" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Prestiti pers. &gt;5k</label><input type="number" id="s2" value="15.12" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Finalizzato &le;5k</label><input type="number" id="s3" value="16.52" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Finalizzato &gt;5k</label><input type="number" id="s4" value="14.28" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Leasing auto/moto</label><input type="number" id="s5" value="11.42" step="0.01" onchange="calcola()"></div>
+    </div>
+    <div class="snote">
+      <strong>Aggiorna ogni trimestre</strong> &mdash; fonte: bancaditalia.it<br>
+      <span class="slink" onclick="salvaTrimestre()">&#128197; Segna aggiornati oggi</span>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="fp">
+  <div class="fg">
+    <div>
+      <label class="flabel">Importo (max 25.000&euro;)</label>
+      <input type="number" id="importo" value="15000" min="500" max="25000" step="100" oninput="calcola()">
+    </div>
+    <div>
+      <label class="flabel">Durata mesi (max 72)</label>
+      <input type="number" id="mesi" value="60" min="6" max="72" oninput="calcola()">
+    </div>
+    <div>
+      <label class="flabel">Gross-up</label>
+      <label class="gw" for="gu">
+        <div class="tog"><input type="checkbox" id="gu" onchange="calcola()"><span class="sld"></span></div>
+        <div class="gl"><strong>Gross-up</strong>Recupera il contributo nell&apos;importo</div>
+      </label>
+    </div>
+  </div>
+  <div style="margin-top:.75rem">
+    <label class="flabel">Spese istruttoria (max &euro;500)</label>
+    <input type="number" id="istruttoria" value="0" min="0" max="500" step="10" oninput="var v=parseFloat(this.value)||0;if(v>500){this.value=500;}if(v<0){this.value=0;}calcola()" onblur="if(parseFloat(this.value)>500)this.value=500;">
+  </div>
+</div>
+
+<!-- RISULTATI -->
+<div class="rg">
+
+  <div class="card cs" id="card_s">
+    <div class="card-usura-strip">&#9888; Soglia Usura Superata</div>
+    <div class="ctitle">Standard</div>
+    <div class="rate-row">
+      <span class="rpill rpill-tan">TAN 6,99%</span>
+      <span class="rpill rpill-taeg">TAEG <span id="taeg_s">&mdash;</span>%</span>
+      <span class="rpill" style="background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.3)">TAN eff. <span id="taneff_s">&mdash;</span>%</span>
+    </div>
+    <div class="reff-row"><span class="reff-lbl">Rata effettiva</span><span class="reff-val" id="reff_s">&mdash;</span></div>
+    <div class="rlabel">Rata mensile (da contratto)</div>
+    <div class="rval" id="r_s">&euro;&nbsp;&mdash;</div>
+    <div class="pbox"><span class="pbox-lbl">1&ordf; rata</span><span class="pbox-val" id="p1_s">&mdash;</span></div>
+    <div class="div"></div>
+    <div class="row"><span class="row-l">Importo richiesto</span><span class="row-v dim" id="imp_orig_s">&mdash;</span></div>
+    <div class="row"><span class="row-l">Spese istruttoria</span><span class="row-v dim" id="istr_s">&mdash;</span></div>
+    <div class="row"><span class="row-l">Importo finanziato</span><span class="row-v neu" id="imp_s">&mdash;</span></div>
+    <div class="row"><span class="row-l">Monte interessi</span><span class="row-v dim" id="int_s">&mdash;</span></div>
+    <div class="tbox">
+      <div class="tbox-title">Totale dovuto consumatore</div>
+      <div class="tr"><span class="tr-l">Rata mensile &times; <span id="nm_s">&mdash;</span> mesi</span><span class="tr-v" id="rc_s">&mdash;</span></div>
+      <div class="tr"><span class="tr-l">Sp. inc. rata (&euro;4 &times; <span id="nm2_s">&mdash;</span> mesi)</span><span class="tr-v" id="inc_s">&mdash;</span></div>
+      <div class="tr"><span class="tr-l">Bollo contratto</span><span class="tr-v">&euro;&nbsp;16,00</span></div>
+      <div class="tr"><span class="tr-l">Bollo rendiconto (&euro;2 &times; <span id="anni_s">&mdash;</span> anni)</span><span class="tr-v" id="br_s">&mdash;</span></div>
+      <div class="tsep"></div>
+      <div class="tf"><span class="tf-l">Totale dovuto</span><span class="tf-v" id="tot_s">&mdash;</span></div>
+    </div>
+    <div class="netbox" id="istr_box_s" style="display:none;margin-top:.5rem;border-color:var(--gold)">
+      <span class="net-l" style="color:var(--gold);font-size:.5rem">Sp. istruttoria (fattura dealer)</span>
+      <span class="net-v" style="color:var(--gold);font-size:.8rem" id="istr_earn_s">&mdash;</span>
+    </div>
+  </div>
+
+  <div class="card ca" id="card_a">
+    <div class="card-usura-strip">&#9888; Soglia Usura Superata</div>
+    <div class="ctitle">Agevolato 55/45 <span class="gbadge" id="gb_a">gross-up</span></div>
+    <div class="rate-row">
+      <span class="rpill rpill-tan">TAN <span id="tan_a2">&mdash;</span>%</span>
+      <span class="rpill rpill-taeg">TAEG <span id="taeg_a">&mdash;</span>%</span>
+      <span class="rpill" style="background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.3)">TAN eff. <span id="taneff_a">&mdash;</span>%</span>
+    </div>
+    <div class="reff-row"><span class="reff-lbl">Rata effettiva</span><span class="reff-val" id="reff_a">&mdash;</span></div>
+    <div class="rlabel">Rata mensile (da contratto)</div>
+    <div class="rval" id="r_a">&euro;&nbsp;&mdash;</div>
+    <div class="pbox"><span class="pbox-lbl">1&ordf; rata</span><span class="pbox-val" id="p1_a">&mdash;</span></div>
+    <div class="div"></div>
+    <div class="row"><span class="row-l">Importo richiesto</span><span class="row-v dim" id="imp_orig_a">&mdash;</span></div>
+    <div class="row"><span class="row-l">Spese istruttoria</span><span class="row-v dim" id="istr_a">&mdash;</span></div>
+    <div class="row"><span class="row-l">Importo finanziato</span><span class="row-v neu" id="imp_a">&mdash;</span></div>
+    <div class="row"><span class="row-l">Interessi cliente</span><span class="row-v neu" id="int_a">&mdash;</span></div>
+    <div class="row"><span class="row-l">Contributo dealer</span><span class="row-v neg" id="con_a">&mdash;</span></div>
+    <div class="netbox"><span class="net-l">Netto dealer</span><span class="net-v" id="net_a">&mdash;</span></div>
+    <div class="netbox" id="istr_box_a" style="display:none;border-color:var(--gold)">
+      <span class="net-l" style="color:var(--gold);font-size:.5rem">Sp. istruttoria (fattura dealer)</span>
+      <span class="net-v" style="color:var(--gold);font-size:.8rem" id="istr_earn_a">&mdash;</span>
+    </div>
+    <div class="tbox">
+      <div class="tbox-title">Totale dovuto consumatore</div>
+      <div class="tr"><span class="tr-l">Rata mensile &times; <span id="nm_a">&mdash;</span> mesi</span><span class="tr-v" id="rc_a">&mdash;</span></div>
+      <div class="tr"><span class="tr-l">Sp. inc. rata (&euro;4 &times; <span id="nm2_a">&mdash;</span> mesi)</span><span class="tr-v" id="inc_a">&mdash;</span></div>
+      <div class="tr"><span class="tr-l">Bollo contratto</span><span class="tr-v">&euro;&nbsp;16,00</span></div>
+      <div class="tr"><span class="tr-l">Bollo rendiconto (&euro;2 &times; <span id="anni_a">&mdash;</span> anni)</span><span class="tr-v" id="br_a">&mdash;</span></div>
+      <div class="tsep"></div>
+      <div class="tf"><span class="tf-l">Totale dovuto</span><span class="tf-v" id="tot_a">&mdash;</span></div>
+    </div>
+  </div>
+
+  <div class="card cz" id="card_z">
+    <div class="card-usura-strip">&#9888; Soglia Usura Superata</div>
+    <div class="ctitle">Tasso Zero <span class="gbadge" id="gb_z">gross-up</span></div>
+    <div class="rate-row">
+      <span class="rpill rpill-tan">TAN 0%</span>
+      <span class="rpill rpill-taeg">TAEG <span id="taeg_z">&mdash;</span>%</span>
+      <span class="rpill" style="background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.3)">TAN eff. <span id="taneff_z">&mdash;</span>%</span>
+    </div>
+    <div class="reff-row"><span class="reff-lbl">Rata effettiva</span><span class="reff-val" id="reff_z">&mdash;</span></div>
+    <div class="rlabel">Rata mensile (da contratto)</div>
+    <div class="rval" id="r_z">&euro;&nbsp;&mdash;</div>
+    <div class="pbox"><span class="pbox-lbl">1&ordf; rata</span><span class="pbox-val" id="p1_z">&mdash;</span></div>
+    <div class="div"></div>
+    <div class="row"><span class="row-l">Importo richiesto</span><span class="row-v dim" id="imp_orig_z">&mdash;</span></div>
+    <div class="row"><span class="row-l">Spese istruttoria</span><span class="row-v dim" id="istr_z">&mdash;</span></div>
+    <div class="row"><span class="row-l">Importo finanziato</span><span class="row-v neu" id="imp_z">&mdash;</span></div>
+    <div class="row"><span class="row-l">Interessi cliente</span><span class="row-v dim">&euro;&nbsp;0,00</span></div>
+    <div class="row"><span class="row-l">Contributo dealer</span><span class="row-v neg" id="con_z">&mdash;</span></div>
+    <div class="netbox"><span class="net-l">Netto dealer</span><span class="net-v" id="net_z">&mdash;</span></div>
+    <div class="netbox" id="istr_box_z" style="display:none;border-color:var(--gold)">
+      <span class="net-l" style="color:var(--gold);font-size:.5rem">Sp. istruttoria (fattura dealer)</span>
+      <span class="net-v" style="color:var(--gold);font-size:.8rem" id="istr_earn_z">&mdash;</span>
+    </div>
+    <div class="tbox">
+      <div class="tbox-title">Totale dovuto consumatore</div>
+      <div class="tr"><span class="tr-l">Rata mensile &times; <span id="nm_z">&mdash;</span> mesi</span><span class="tr-v" id="rc_z">&mdash;</span></div>
+      <div class="tr"><span class="tr-l">Sp. inc. rata (&euro;4 &times; <span id="nm2_z">&mdash;</span> mesi)</span><span class="tr-v" id="inc_z">&mdash;</span></div>
+      <div class="tr"><span class="tr-l">Bollo contratto</span><span class="tr-v">&euro;&nbsp;16,00</span></div>
+      <div class="tr"><span class="tr-l">Bollo rendiconto (&euro;2 &times; <span id="anni_z">&mdash;</span> anni)</span><span class="tr-v" id="br_z">&mdash;</span></div>
+      <div class="tsep"></div>
+      <div class="tf"><span class="tf-l">Totale dovuto</span><span class="tf-v" id="tot_z">&mdash;</span></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Strumento ad uso interno &mdash; TAN base 6,99% fisso<br>
+  1&ordf; rata = rata + &euro;4 incasso + &euro;16 oneri &middot; Totale = rate effettive + bollo contratto &euro;16 + bollo rendiconto &euro;2/anno<br>
+  TAEG calcolato dir. UE 2008/48/CE &mdash; I calcoli sono indicativi e soggetti a conferma contrattuale.
+</footer>
+</div>
+
+<script>
+var TAN_BASE=6.99, SPESE=4, ONERI_1A=16, BOLLO_C=16, BOLLO_R=2;
+
+function f(v){return "€ "+v.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fp(v){return v.toLocaleString("it-IT",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function cm(x){return Math.ceil(x*2)/2;}
+
+function pmt(p,tan,n){
+  if(tan<=0) return p/n;
+  var i=tan/100/12;
+  return p*i/(1-Math.pow(1+i,-n));
+}
+function pvRata(rata,n){
+  var i=TAN_BASE/100/12,pv=0;
+  for(var k=1;k<=n;k++) pv+=rata/Math.pow(1+i,k);
+  return pv;
+}
+function calcolaTAEG(P,rata,n){
+  var of=ONERI_1A,r=0.005;
+  for(var it=0;it<200;it++){
+    var npv=P-(rata+SPESE+of)/Math.pow(1+r,1);
+    for(var k=2;k<=n;k++) npv-=(rata+SPESE)/Math.pow(1+r,k);
+    var d=(rata+SPESE+of)/Math.pow(1+r,2);
+    for(var k=2;k<=n;k++) d+=k*(rata+SPESE)/Math.pow(1+r,k+1);
+    if(Math.abs(d)<1e-12) break;
+    var rn=r-npv/d; if(Math.abs(rn-r)<1e-9){r=rn;break;} r=rn;
+  }
+  return (Math.pow(1+r,12)-1)*100;
+}
+function getSoglia(P){
+  return P<=5000
+    ? parseFloat(document.getElementById("s3").value)||999
+    : parseFloat(document.getElementById("s4").value)||999;
+}
+function setUsura(cardId,taeg,sog){
+  var card=document.getElementById(cardId);
+  if(taeg>sog) card.classList.add("usura");
+  else card.classList.remove("usura");
+}
+function aggiornaPageAlert(violazioni){
+  var el=document.getElementById("pageAlert");
+  var msg=document.getElementById("pageAlertMsg");
+  if(violazioni.length>0){
+    el.classList.add("on");
+    msg.textContent="Le seguenti tipologie superano la soglia: "+violazioni.join(", ")+". Verificare prima di procedere.";
+  } else {
+    el.classList.remove("on");
+    msg.textContent="";
+  }
+}
+
+function setCard(px,P,imp,rata,n,extra,extra_istr){
+  extra_istr=extra_istr||0;
+  var rEff=rata+SPESE, p1=rata+SPESE+ONERI_1A;
+  var anni=Math.ceil(n/12);
+  var tot=rEff*n+BOLLO_C+BOLLO_R*anni;
+  var taeg=calcolaTAEG(imp,rata,n);
+  document.getElementById("r_"+px).textContent    =f(rata);
+  document.getElementById("reff_"+px).textContent =f(rEff);
+  document.getElementById("taeg_"+px).textContent =fp(taeg);
+  document.getElementById("p1_"+px).textContent   =f(p1);
+  document.getElementById("imp_orig_"+px).textContent=f(imp-extra_istr);
+  document.getElementById("istr_"+px).textContent  =extra_istr>0?f(extra_istr):"€ 0,00";
+  var istrBox=document.getElementById("istr_box_"+px);
+  var istrEarn=document.getElementById("istr_earn_"+px);
+  if(istrBox){istrBox.style.display=extra_istr>0?"flex":"none";}
+  if(istrEarn){istrEarn.textContent=f(extra_istr);}
+  document.getElementById("imp_"+px).textContent  =f(imp);
+  document.getElementById("nm_"+px).textContent   =n;
+  document.getElementById("nm2_"+px).textContent  =n;
+  document.getElementById("inc_"+px).textContent  =f(SPESE*n);
+  document.getElementById("anni_"+px).textContent =anni;
+  document.getElementById("rc_"+px).textContent   =f(rEff*n);
+  document.getElementById("br_"+px).textContent   =f(BOLLO_R*anni);
+  document.getElementById("tot_"+px).textContent  =f(tot);
+  if(extra){
+    if(extra.int!==undefined) document.getElementById("int_"+px).textContent=f(extra.int);
+    if(extra.con!==undefined) document.getElementById("con_"+px).textContent=f(extra.con);
+    if(extra.net!==undefined) document.getElementById("net_"+px).textContent=f(extra.net);
+    if(extra.tan!==undefined){
+      var elTan=document.getElementById("tan_"+px);
+      if(elTan) elTan.textContent=fp(extra.tan);
+      var elTan2=document.getElementById("tan_"+px+"2");
+      if(elTan2) elTan2.textContent=fp(extra.tan);
+    }
+  }
+  var te=tanEff(imp,rata,n);
+  document.getElementById("taneff_"+px).textContent=fp(te);
+  return taeg;
+}
+
+function tanEff(P, rata, n) {
+  var lo=0.000001, hi=2.0;
+  for(var i=0;i<200;i++) {
+    var mid=(lo+hi)/2;
+    var pv=rata*(1-Math.pow(1+mid,-n))/mid;
+    if(pv>P) lo=mid; else hi=mid;
+  }
+  return mid*12*100;
+}
+
+function calcola(){
+  var P=parseFloat(document.getElementById("importo").value)||0;
+  if(P>25000) P=25000;
+  var n=parseInt(document.getElementById("mesi").value)||1;
+  if(n>120) n=120;
+  var gu=document.getElementById("gu").checked;
+  var istr=Math.min(Math.max(parseFloat(document.getElementById("istruttoria").value)||0,0),500);document.getElementById("istruttoria").value=istr;
+  P=P+istr;
+  var tanA=TAN_BASE/2;
+  var sog=getSoglia(P);
+
+  document.getElementById("gb_a").style.display=gu?"inline":"none";
+  document.getElementById("gb_z").style.display=gu?"inline":"none";
+
+  var violazioni=[];
+
+  // STANDARD — usa TAN effettivo
+  var rS=Math.ceil(pmt(P,TAN_BASE,n));
+  var tanS_eff=tanEff(P,rS,n);
+  var tS=setCard("s",P,P,rS,n,{int:rS*n-P},istr);
+  setUsura("card_s",tS,sog);
+  if(tS>sog) violazioni.push("Standard (TAEG "+fp(tS)+"%)");
+
+  // TASSO ZERO — rata esatta scontata al TAN NOMINALE (formula banca)
+  var rZ0=P/n;
+  var iNom=TAN_BASE/100/12;
+  var pvZ=0;
+  for(var k=1;k<=n;k++) pvZ+=rZ0/Math.pow(1+iNom,k);
+  var cZ0=Math.round(P-pvZ);
+  var impZ,rZ,cZ,netZ;
+  if(gu){impZ=P+cZ0;rZ=cm(impZ/n);cZ=cZ0;netZ=P;}
+  else  {impZ=P;rZ=cm(rZ0);cZ=cZ0;netZ=P-cZ0;}
+  var tZ=setCard("z",impZ,impZ,rZ,n,{con:cZ,net:netZ},istr);
+  setUsura("card_z",tZ,sog);
+  if(tZ>sog) violazioni.push("Tasso Zero (TAEG "+fp(tZ)+"%)");
+
+  // AGEVOLATO — rata arrotondata al mezzo euro scontata al TAN NOMINALE (formula banca)
+  var rA0=pmt(P,tanA,n);
+  var rA_mezzo=Math.ceil(rA0*2)/2;
+  var tanA_eff=tanEff(P,rA_mezzo,n);
+  var pvA=0;
+  for(var k=1;k<=n;k++) pvA+=rA_mezzo/Math.pow(1+iNom,k);
+  var cA0=Math.round(P-pvA);
+  var impA,rA,iA,cA,netA;
+  if(gu){impA=P+cA0;rA=cm(pmt(impA,tanA,n));iA=Math.max(0,rA*n-impA);cA=cA0;netA=P;}
+  else  {impA=P;rA=rA_mezzo;iA=Math.max(0,rA*n-P);cA=cA0;netA=P-cA0;}
+  var tA=setCard("a",impA,impA,rA,n,{int:iA,con:cA,net:netA,tan:tanA_eff},istr);
+  setUsura("card_a",tA,sog);
+  if(tA>sog) violazioni.push("Agevolato (TAEG "+fp(tA)+"%)");
+
+  aggiornaPageAlert(violazioni);
+}
+
+function toggleSoglia(){
+  var b=document.getElementById("sBody"), btn=document.getElementById("sBtn");
+  var closed=b.classList.toggle("closed");
+  btn.textContent=closed?"Apri ▼":"Chiudi ▲";
+}
+function salvaTrimestre(){
+  try{localStorage.setItem("sogliaUpd",new Date().toLocaleDateString("it-IT"));}catch(e){}
+  aggiornaLabel(); calcola();
+}
+function aggiornaLabel(){
+  var m=new Date().getMonth()+1,y=new Date().getFullYear();
+  var t=(m<=3?"I":m<=6?"II":m<=9?"III":"IV")+" trim. "+y;
+  var d; try{d=localStorage.getItem("sogliaUpd");}catch(e){}
+  document.getElementById("trimLabel").textContent=t+(d?" — agg. "+d:" — da aggiornare");
+}
+
+aggiornaLabel();
+calcola();
+</script>
+</body>
+</html>
