@@ -163,7 +163,7 @@ footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-
     </div>
     <div>
       <label class="flabel">Durata mesi (max 120)</label>
-      <input type="number" id="mesi" value="60" min="6" max="120" oninput="calcola()">
+      <input type="number" id="mesi" value="0" min="6" max="120" onfocus="if(this.value=='0')this.value='';" oninput="var v=parseInt(this.value)||0;if(v>120)this.value=120;calcola();" onblur="var v=parseInt(this.value)||6;if(v<6)this.value=6;if(v>120)this.value=120;calcola();">
     </div>
     <div>
       <label class="flabel">Gross-up</label>
