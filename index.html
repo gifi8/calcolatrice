@@ -37,6 +37,9 @@
     .card-120::before{background:var(--accent);} .card-120:active{border-color:var(--accent);}
     .card-72::before{background:var(--acc2);} .card-72:active{border-color:var(--acc2);}
     .card-prov::before{background:var(--purple);} .card-prov:active{border-color:var(--purple);}
+    .card-moto::before{background:#f59e0b;} .card-moto:active{border-color:#f59e0b;}
+    .card-moto .card-rate{color:#f59e0b;}
+    .badge-moto{background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.3);}
     .card-rate{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1;}
     .card-120 .card-rate{color:var(--accent);} .card-72 .card-rate{color:var(--acc2);} .card-prov .card-rate{color:var(--purple);}
     .card-label{font-size:0.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.3rem;}
@@ -119,7 +122,23 @@
     </div>
   </div>
 
-  <footer>
+
+  <div class="section">
+    <div class="section-header">
+      <span class="section-label">Calcolatrice Moto</span>
+      <span class="section-badge badge-moto">max 60 mesi</span>
+    </div>
+    <div class="grid">
+      <a class="card card-moto" href="calcolatrice_moto.html" style="grid-column:1/-1">
+        <div style="font-size:1.8rem;margin-bottom:.3rem">🏍</div>
+        <div class="card-rate" style="font-size:1.2rem">Moto Nuova &amp; Usata</div>
+        <div class="card-label">TAN 6,99% &mdash; 8,99% &middot; Tasso Zero Captive</div>
+        <div class="card-arrow">›</div>
+      </a>
+    </div>
+  </div>
+
+    <footer>
     Strumento ad uso interno riservato<br>
     I calcoli sono indicativi e soggetti a conferma contrattuale
   </footer>
