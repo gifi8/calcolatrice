@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#00e5a0">
+<title>Simulatore Moto —  Easy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0c10;--surf:#111418;--surf2:#181c22;--brd:#252a33;
+  --acc:#00e5a0;--acc2:#0099ff;--warn:#ff6b35;--gold:#f59e0b;
+  --purple:#a855f7;--txt:#e8ecf0;--mut:#5a6270;--red:#ef4444;
+}
+body{background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace;min-height:100vh;padding:1.5rem 1rem;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-30%;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(ellipse,rgba(0,229,160,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+.wrap{max-width:680px;margin:0 auto;position:relative;z-index:1}
+
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--brd);flex-wrap:wrap;gap:.75rem}
+.htitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-.03em}
+.hsub{font-size:.6rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:.15rem}
+.badge{background:var(--surf2);border:1px solid var(--acc);border-radius:6px;padding:.3rem .9rem;text-align:center}
+.badge span{display:block;font-size:.5rem;color:var(--mut);text-transform:uppercase;letter-spacing:.12em}
+.badge strong{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--acc);line-height:1.1}
+
+/* tab prodotto */
+.tab-row{display:flex;gap:.5rem;margin-bottom:1.1rem}
+.tab{flex:1;padding:.6rem;text-align:center;border-radius:8px;border:1px solid var(--brd);background:var(--surf);cursor:pointer;font-size:.65rem;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);transition:all .2s}
+.tab.active-new{border-color:var(--acc);background:rgba(0,229,160,.08);color:var(--acc)}
+.tab.active-used{border-color:var(--acc2);background:rgba(0,153,255,.08);color:var(--acc2)}
+
+/* form */
+.fp{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:1.1rem;margin-bottom:1rem}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;align-items:end}
+@media(max-width:420px){.fg{grid-template-columns:1fr}}
+.flabel{display:block;font-size:.58rem;color:var(--mut);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.35rem}
+input[type=number],select{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.6rem .8rem;color:var(--txt);font-family:'DM Mono',monospace;font-size:.9rem;outline:none;transition:border-color .2s}
+input[type=number]:focus,select:focus{border-color:var(--acc)}
+select option{background:var(--surf)}
+
+/* selector tasso / durata a pillole */
+.pill-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.85rem}
+.pill{padding:.35rem .7rem;border-radius:20px;border:1px solid var(--brd);background:var(--bg);font-size:.62rem;font-family:'DM Mono',monospace;color:var(--mut);cursor:pointer;transition:all .2s;white-space:nowrap}
+.pill:hover{border-color:var(--brd);color:var(--mut)}
+.pill-tan-item:hover{border-color:var(--acc2)!important;color:var(--acc2)!important}
+.pill-tz-item:hover{border-color:var(--acc)!important;color:var(--acc)!important}
+.pill.sel-tan{border-color:var(--acc2);background:rgba(0,153,255,.1);color:var(--acc2)}
+.pill.sel-tz{border-color:var(--acc);background:rgba(0,229,160,.1);color:var(--acc)}
+.pill-label{font-size:.52rem;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:.85rem;margin-bottom:.35rem}
+
+/* card risultato */
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:1.1rem;margin-bottom:1rem;display:none}
+.card.on{display:block}
+.card-tan{border-color:var(--acc2)}
+.card-tan::before{content:'';display:block;height:3px;background:var(--acc2);margin:-1.1rem -1.1rem 1rem -1.1rem;border-radius:12px 12px 0 0}
+.card-tz{border-color:var(--acc)}
+.card-tz::before{content:'';display:block;height:3px;background:var(--acc);margin:-1.1rem -1.1rem 1rem -1.1rem;border-radius:12px 12px 0 0}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem}
+.card-title{font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.card-tan .card-title{color:var(--acc2)}
+.card-tz .card-title{color:var(--acc)}
+.codice-tag{font-size:.5rem;padding:.15rem .45rem;border-radius:4px;background:rgba(245,158,11,.12);color:var(--gold);border:1px solid rgba(245,158,11,.25);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:.06em}
+
+.reff-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--brd);border-radius:6px;padding:.4rem .75rem;margin-bottom:.75rem}
+.reff-lbl{font-size:.55rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+.reff-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800}
+.card-tan .reff-val{color:var(--acc2)}
+.card-tz .reff-val{color:var(--acc)}
+.rlabel{font-size:.5rem;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.08rem}
+.rval{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:500;color:var(--mut);margin-bottom:.35rem}
+
+.div{height:1px;background:var(--brd);margin:.6rem 0}
+.row{display:flex;justify-content:space-between;align-items:baseline;font-size:.65rem;margin-bottom:.32rem;gap:.3rem}
+.row-l{color:var(--mut);font-size:.62rem}.row-v{font-weight:500;text-align:right}
+.neg{color:var(--warn)}.neu{color:var(--txt)}.dim{color:var(--mut)}.gld{color:var(--gold)}
+
+.prov-box{background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:6px;padding:.55rem .75rem;margin-top:.6rem;display:flex;justify-content:space-between;align-items:center}
+.prov-lbl{font-size:.52rem;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);font-family:'Syne',sans-serif}
+.prov-right{text-align:right}
+.prov-val{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--acc)}
+.prov-detail{font-size:.52rem;color:var(--mut);margin-top:.1rem}
+
+.netbox{background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.5rem .75rem;display:flex;justify-content:space-between;align-items:center}
+.net-l{font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}
+
+.soglia-panel{background:var(--surf);border:1px solid var(--brd);border-radius:8px;padding:.5rem .75rem;margin-bottom:1rem}
+.soglia-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.soglia-hdr-title{font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.1em}
+.soglia-btn{font-size:.6rem;color:var(--acc);background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);border-radius:4px;padding:.18rem .5rem;cursor:pointer}
+.soglia-body{margin-top:.9rem}.soglia-body.closed{display:none}
+.soglia-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem}
+.soglia-grid-moto{margin-top:.5rem;display:grid;grid-template-columns:1fr;gap:.4rem}
+.si{background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:.3rem .45rem}
+.si label{font-size:.45rem;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem;display:block}
+.si input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--brd);padding:.1rem 0;color:var(--acc2);font-family:'DM Mono',monospace;font-size:.75rem;outline:none}
+.si input:focus{border-bottom-color:var(--acc2)}
+.page-alert{display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.68rem;color:var(--red);line-height:1.6}
+.page-alert.on{display:block}
+.page-alert strong{font-family:'Syne',sans-serif;font-size:.8rem;display:block;margin-bottom:.25rem}
+.taeg-chip{font-size:.58rem;padding:.12rem .4rem;border-radius:4px;background:rgba(0,153,255,.1);color:var(--acc2);border:1px solid rgba(0,153,255,.25);display:inline-block;margin-bottom:.4rem}
+.taeg-chip.usura{background:rgba(239,68,68,.12);color:var(--red);border-color:rgba(239,68,68,.3)}
+footer{margin-top:1.75rem;padding-top:1rem;border-top:1px solid var(--brd);text-align:center;font-size:.56rem;color:var(--mut);line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="htitle">Simulatore Moto</div>
+    <div class="hsub">Moto Nuova &middot; Moto Usata</div>
+  </div>
+  <div class="badge"><span></span><strong></strong></div>
+</header>
+
+<!-- ALERT USURA -->
+<div class="page-alert" id="pageAlert">
+  <strong>&#9888; Attenzione &mdash; Soglia Usura Superata</strong>
+  <span id="pageAlertMsg"></span>
+</div>
+<!-- TASSI SOGLIA -->
+<div class="soglia-panel">
+  <div class="soglia-hdr" onclick="toggleSoglia()">
+    <div class="soglia-hdr-title">&#9888; Tassi Soglia Banca d'Italia</div>
+    <span class="soglia-btn" id="sBtn">Apri &#9660;</span>
+  </div>
+  <div class="soglia-body closed" id="sBody">
+    <div class="soglia-grid">
+      <div class="si"><label>Prestiti pers. &le;5k</label><input type="number" id="s1" value="18.08" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Prestiti pers. &gt;5k</label><input type="number" id="s2" value="15.12" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Finalizzato &le;5k</label><input type="number" id="s3" value="16.52" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Finalizzato &gt;5k</label><input type="number" id="s4" value="14.28" step="0.01" onchange="calcola()"></div>
+      <div class="si"><label>Leasing auto/moto</label><input type="number" id="s5" value="11.42" step="0.01" onchange="calcola()"></div>
+    </div>
+    <div style="margin-top:.5rem">
+      <div class="si" style="border-color:rgba(0,229,160,.35);background:rgba(0,229,160,.04)"><label style="color:var(--acc)">&#9679; Soglia usura credito consumo</label><input type="number" id="s_moto" value="17.7875" step="0.01" onchange="calcola()" style="color:var(--acc);border-bottom-color:rgba(0,229,160,.4)"></div>
+    </div>
+  </div>
+</div>
+<!-- TAB PRODOTTO -->
+<div class="tab-row">
+  <div class="tab active-new" id="tab_new" onclick="setProdotto('new')">🏍 Moto Nuova (Prod. 23)</div>
+  <div class="tab" id="tab_used" onclick="setProdotto('used')">🏍 Moto Usata (Prod. 36)</div>
+</div>
+
+<!-- FORM -->
+<div class="fp">
+  <div class="fg">
+    <div>
+      <label class="flabel">Valore moto (€)</label>
+      <input type="number" id="importo" value="0" min="500" max="30000" step="100"
+        onfocus="if(this.value=='0')this.value='';"
+        oninput="calcola();"
+        onblur="var v=parseFloat(this.value)||500;if(v<500)this.value=500;if(v>maxImporto())this.value=maxImporto();calcola();">
+    </div>
+    <div>
+      <label class="flabel">Durata mesi (max 60)</label>
+      <input type="number" id="mesi" value="0" min="6" max="60"
+        onfocus="if(this.value=='0')this.value='';"
+        oninput="var v=parseInt(this.value)||0;if(v>maxMesi())this.value=maxMesi();calcola();"
+        onblur="var v=parseInt(this.value)||6;if(v<6)this.value=6;if(v>maxMesi())this.value=maxMesi();calcola();">
+    </div>
+    <div>
+      <label class="flabel">Destinazione</label>
+      <select id="destinazione" onchange="aggiornaDest();calcola()">
+        <option value="MTN">Moto Targate Nuovo</option>
+        <option value="CIN">Ciclomotori Nuovo</option>
+        <option value="QMN">Quad e Minicar Nuovo</option>
+      </select>
+    </div>
+    <div>
+      <label class="flabel">Sp. istruttoria (max €500)</label>
+      <input type="number" id="istruttoria" value="0" min="0" max="500" step="10"
+        onfocus="if(this.value=='0')this.value='';"
+        oninput="var v=parseFloat(this.value)||0;if(v>500)this.value=500;calcola();"
+        onblur="var v=parseFloat(this.value)||0;if(v>500)this.value=500;if(this.value==='')this.value=0;calcola();">
+    </div>
+  </div>
+
+  <!-- SELECTOR TASSO -->
+  <div class="pill-label" style="font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;color:var(--acc2);text-transform:uppercase;letter-spacing:.1em;margin-top:.85rem;margin-bottom:.35rem">&#9654; Tasso Standard</div>
+  <div class="pill-row" id="tanPills"></div>
+
+  <!-- SELECTOR TASSO ZERO -->
+  <div class="pill-label" style="font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:.1em;margin-top:.85rem;margin-bottom:.35rem">&#9889; Tasso Zero Captive</div>
+  <div class="pill-row" id="tzPills"></div>
+</div>
+
+<!-- CARD TASSO STANDARD -->
+<div class="card card-tan" id="cardTan">
+  <div class="card-header">
+    <div class="card-title" id="ct_title">—</div>
+    <div class="codice-tag" id="ct_codice">—</div>
+  </div>
+  <div id="ct_taeg_chip" style="margin-bottom:.4rem"></div>
+  <div class="reff-row">
+    <span class="reff-lbl">Rata mensile</span>
+    <span class="reff-val" id="ct_rata">—</span>
+  </div>
+  <div class="div"></div>
+  <div class="row"><span class="row-l">Importo moto</span><span class="row-v dim" id="ct_imp0">—</span></div>
+  <div class="row" id="ct_istr_row" style="display:none"><span class="row-l">Sp. istruttoria</span><span class="row-v dim" id="ct_istr">—</span></div>
+  <div class="row"><span class="row-l">Importo finanziato</span><span class="row-v neu" id="ct_impf">—</span></div>
+  <div class="row"><span class="row-l">Monte interessi</span><span class="row-v dim" id="ct_mi">—</span></div>
+  <div class="row"><span class="row-l">Totale dovuto</span><span class="row-v neu" id="ct_tot">—</span></div>
+  <div class="prov-box">
+    <div class="prov-lbl">Ristorno m.i. dealer</div>
+    <div class="prov-right">
+      <div class="prov-val" id="ct_prov">—</div>
+      <div class="prov-detail" id="ct_prov_detail">—</div>
+    </div>
+  </div>
+  <div class="netbox" id="ct_istr_earn_box" style="display:none;margin-top:.5rem;border-color:var(--gold)">
+    <span class="net-l" style="color:var(--gold);font-size:.5rem">Sp. istruttoria (fattura dealer)</span>
+    <span style="font-family:'Syne',sans-serif;font-size:.8rem;font-weight:800;color:var(--gold)" id="ct_istr_earn">—</span>
+  </div>
+  <div class="netbox" id="ct_tot_prov_box" style="margin-top:.5rem;border-color:var(--purple);background:rgba(168,85,247,.05)">
+    <span class="net-l" style="color:var(--purple);font-size:.55rem">Totale provvigioni dealer</span>
+    <span style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--purple)" id="ct_tot_prov">—</span>
+  </div>
+</div>
+
+<!-- CARD TASSO ZERO -->
+<div class="card card-tz" id="cardTZ">
+  <div class="card-header">
+    <div class="card-title" id="tz_title">Tasso Zero Captive</div>
+    <div class="codice-tag" id="tz_codice">—</div>
+  </div>
+  <div class="reff-row">
+    <span class="reff-lbl">Rata mensile</span>
+    <span class="reff-val" id="tz_rata">—</span>
+  </div>
+  <div class="div"></div>
+  <div class="row"><span class="row-l">Importo moto</span><span class="row-v dim" id="tz_imp0">—</span></div>
+  <div class="row" id="tz_istr_row" style="display:none"><span class="row-l">Sp. istruttoria</span><span class="row-v dim" id="tz_istr">—</span></div>
+  <div class="row"><span class="row-l">Maggiorazione captive</span><span class="row-v gld" id="tz_magg">—</span></div>
+  <div class="row"><span class="row-l">Importo finanziato</span><span class="row-v neu" id="tz_impf">—</span></div>
+  <div class="row"><span class="row-l">Totale dovuto</span><span class="row-v neu" id="tz_tot">—</span></div>
+</div>
+
+<footer>
+  Strumento ad uso interno riservato &middot; <br>
+  Ristorno m.i. calcolato sul monte interessi totale &middot; I calcoli sono indicativi e soggetti a conferma contrattuale
+</footer>
+</div>
+
+<script>
+var prodotto = 'new';
+function toggleSoglia(){
+  var b=document.getElementById('sBody'),btn=document.getElementById('sBtn');
+  b.classList.toggle('closed');
+  btn.textContent=b.classList.contains('closed')?'Apri ▼':'Chiudi ▲';
+}
+function getSoglia(P){
+  return parseFloat(document.getElementById('s_moto').value)||17.7875;
+}
+function calcolaTEG(P0, rataContrattuale, n, istr){
+  // TEG credito al consumo finalizzato:
+  // - netto erogato = P0 (valore bene, senza istruttoria)
+  // - rata effettiva = rata contrattuale (su P0+istr) + 5 spese incasso
+  // - prima rata maggiorata di 16 euro imposta sostitutiva (bollo)
+  var netto = P0;
+  var rataBase = rataContrattuale + 5;
+  var r = 0.005;
+  for(var i=0;i<100;i++){
+    var fv = -netto, df = 0;
+    for(var k=1;k<=n;k++){
+      var rata_k = (k===1) ? rataBase + 16 : rataBase;
+      var d = Math.pow(1+r,k);
+      fv  += rata_k / d;
+      df  -= k * rata_k / Math.pow(1+r, k+1);
+    }
+    var nr = r - fv/df;
+    if(Math.abs(nr-r)<1e-8){r=nr;break;}
+    r = nr;
+  }
+  return Math.round(((Math.pow(1+r,12)-1)*100)*100)/100;
+}
+
+var selTan   = 0;    // indice TASSI selezionato
+var selTZ    = null; // indice TZ selezionato
+
+var TASSI = [
+  { tan:6.99, label:'6,99%', codiceN:'GBG', codiceU:'GBP', ristornoN:10, ristornoU:3  },
+  { tan:7.49, label:'7,49%', codiceN:'GBH', codiceU:'GBQ', ristornoN:17, ristornoU:11 },
+  { tan:7.99, label:'7,99%', codiceN:'GBI', codiceU:'GBR', ristornoN:21, ristornoU:15 },
+  { tan:8.49, label:'8,49%', codiceN:'GE-', codiceU:'GEY', ristornoN:26, ristornoU:21 },
+  { tan:8.99, label:'8,99%', codiceN:'G4V', codiceU:'G3X', ristornoN:29, ristornoU:24 },
+];
+var TZ_NEW  = [{rate:12,sp:3.42,codice:'GEJ'},{rate:18,sp:5.00,codice:'GEK'},{rate:24,sp:6.64,codice:'GEL'},{rate:36,sp:9.90,codice:'GEM'}];
+var TZ_USED = [{rate:12,sp:3.69,codice:'GEN'},{rate:18,sp:5.43,codice:'GEO'},{rate:24,sp:7.19,codice:'GEP'},{rate:36,sp:10.40,codice:'GEQ'}];
+
+function f(v){return '\u20ac\u00a0'+v.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fp(v){return v.toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function pmt(P,tan,n){if(tan===0)return P/n;var r=tan/100/12;return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);}
+
+function maxImporto(){
+  var d=document.getElementById('destinazione').value;
+  if(prodotto==='new') return d==='CIN'?10000:30000;
+  return d==='CIU'?8000:20000;
+}
+function maxMesi(){ return 60; }
+
+function setProdotto(p){
+  prodotto=p;
+  document.getElementById('tab_new').className ='tab'+(p==='new' ?' active-new':'');
+  document.getElementById('tab_used').className='tab'+(p==='used'?' active-used':'');
+  var sel=document.getElementById('destinazione');
+  sel.innerHTML=p==='new'
+    ?'<option value="MTN">Moto Targate Nuovo</option><option value="CIN">Ciclomotori Nuovo</option><option value="QMN">Quad e Minicar Nuovo</option>'
+    :'<option value="MTU">Moto Targate Usato</option><option value="CIU">Ciclomotori Usato</option><option value="QMU">Quad e Minicar Usato</option>';
+  selTZ=null;
+  renderPills();
+  calcola();
+}
+
+function aggiornaDest(){
+  var imp=parseFloat(document.getElementById('importo').value)||0;
+  if(imp>maxImporto()) document.getElementById('importo').value=maxImporto();
+  var mes=parseInt(document.getElementById('mesi').value)||0;
+  if(mes>maxMesi()) document.getElementById('mesi').value=maxMesi();
+}
+
+function renderPills(){
+  // TAN pills
+  var tp=document.getElementById('tanPills');
+  tp.innerHTML='';
+  TASSI.forEach(function(t,i){
+    var d=document.createElement('div');
+    d.className='pill pill-tan-item'+(selTan===i?' sel-tan':'');
+    d.textContent='TAN '+t.label;
+    d.onclick=function(){selTan=i;selTZ=null;renderPills();calcola();};
+    tp.appendChild(d);
+  });
+  // TZ pills
+  var tzp=document.getElementById('tzPills');
+  tzp.innerHTML='';
+  var list=prodotto==='new'?TZ_NEW:TZ_USED;
+  list.forEach(function(tz,i){
+    var d=document.createElement('div');
+    d.className='pill pill-tz-item'+(selTZ===i?' sel-tz':'');
+    d.textContent=tz.rate+' rate (+'+fp(tz.sp)+'%)';
+    d.onclick=function(){selTZ=(selTZ===i?null:i);if(selTZ!==null)selTan=null;renderPills();calcola();};
+    tzp.appendChild(d);
+  });
+}
+
+function calcola(){
+  var P0  =parseFloat(document.getElementById('importo').value)||0;
+  var n   =parseInt(document.getElementById('mesi').value)||0;
+  var istr=Math.min(parseFloat(document.getElementById('istruttoria').value)||0,500);
+  var P   =P0+istr;
+
+  // ── card tasso standard ──
+  var cardTan=document.getElementById('cardTan');
+  if(selTan!==null && selTan>=0 && P0>0 && n>0){
+    var t=TASSI[selTan];
+    var codice  =prodotto==='new'?t.codiceN:t.codiceU;
+    var ristPerc=prodotto==='new'?t.ristornoN:t.ristornoU;
+    var rata    =pmt(P,t.tan,n);
+    var rataArr =Math.ceil(rata*100)/100;
+    var mi      =rataArr*n-P;
+    var ristorno=Math.round(mi*ristPerc/100*100)/100;
+
+    document.getElementById('ct_title').textContent     ='TAN '+t.label;
+    document.getElementById('ct_codice').textContent    ='Cod. '+codice;
+    document.getElementById('ct_rata').textContent      =f(rataArr);
+    document.getElementById('ct_imp0').textContent      =f(P0);
+    document.getElementById('ct_impf').textContent      =f(P);
+    document.getElementById('ct_mi').textContent        =f(mi);
+    document.getElementById('ct_tot').textContent       =f(rataArr*n);
+    document.getElementById('ct_prov').textContent      =f(ristorno);
+    document.getElementById('ct_prov_detail').textContent=ristPerc+'% di '+f(mi);
+    if(istr>0){
+      document.getElementById('ct_istr_row').style.display='flex';
+      document.getElementById('ct_istr').textContent=f(istr);
+    } else {
+      document.getElementById('ct_istr_row').style.display='none';
+    }
+    var taeg=calcolaTEG(P0, rataArr, n, istr);
+    var soglia=getSoglia(P);
+    var isUsura=taeg>soglia;
+    var chip=document.getElementById('ct_taeg_chip');
+    chip.innerHTML='<span class="taeg-chip'+(isUsura?' usura':'')+'">TEG '+fp(taeg)+'%'+(isUsura?' ⚠ USURA':'')+' </span>';
+    var pa=document.getElementById('pageAlert');
+    if(isUsura){
+      pa.classList.add('on');
+      document.getElementById('pageAlertMsg').textContent=' TAN '+TASSI[selTan].label+' — TEG '+fp(taeg)+'% supera soglia '+fp(soglia)+'%';
+    } else { pa.classList.remove('on'); }
+    var istrEarnBox = document.getElementById('ct_istr_earn_box');
+    var istrEarn    = document.getElementById('ct_istr_earn');
+    if(istr>0){
+      istrEarnBox.style.display='flex';
+      istrEarn.textContent=f(istr);
+    } else {
+      istrEarnBox.style.display='none';
+    }
+    var totProv = ristorno + istr;
+    document.getElementById('ct_tot_prov').textContent = f(totProv);
+    cardTan.classList.add('on');
+  } else {
+    cardTan.classList.remove('on');
+  }
+
+  // ── card tasso zero ──
+  var cardTZ=document.getElementById('cardTZ');
+  var list=prodotto==='new'?TZ_NEW:TZ_USED;
+  if(selTZ!==null && P0>0){
+    var tz=list[selTZ];
+    var magg    =Math.round(P0*tz.sp/100*100)/100;
+    var PF_tz   =P0+magg+istr;
+    var nTZ     =tz.rate;
+    var rata_tz =Math.ceil(PF_tz/nTZ*100)/100;
+    var tot_tz  =rata_tz*nTZ;
+
+    document.getElementById('tz_title').textContent  ='Tasso Zero — '+nTZ+' rate';
+    document.getElementById('tz_codice').textContent ='Cod. '+tz.codice;
+    document.getElementById('tz_rata').textContent   =f(rata_tz);
+    document.getElementById('tz_imp0').textContent   =f(P0);
+    document.getElementById('tz_magg').textContent   =f(magg)+' ('+fp(tz.sp)+'%)';
+    document.getElementById('tz_impf').textContent   =f(PF_tz);
+    document.getElementById('tz_tot').textContent    =f(tot_tz);
+    if(istr>0){
+      document.getElementById('tz_istr_row').style.display='flex';
+      document.getElementById('tz_istr').textContent=f(istr);
+    } else {
+      document.getElementById('tz_istr_row').style.display='none';
+    }
+    cardTZ.classList.add('on');
+  } else {
+    cardTZ.classList.remove('on');
+  }
+}
+
+renderPills();
+calcola();
+</script>
+</body>
+</html>
